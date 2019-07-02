@@ -1,5 +1,7 @@
 # My MongoDB learning notes
 
+MOngoDB is a no-sql database software which uses a document oriented structure. 
+
 ## Install on Manjaro
 
 MongoDB is currently available at the Arch User Repository (AUR) as `mongodb-bin`, is was removed from the community repository because of licencing problems.
@@ -10,7 +12,6 @@ I also recommend the installation of compass and mongo tools, also available at 
 ## Starting the database
 
 The database can be started with the `mongod` command, however it will not work properly as this command expect a directory path to save the database. The command by default tries to use ```/data/db`` path, but it does not exist. Some extra arguments must be set to the command to work.
-
 ```shell
 # I'm putting the data in a path inside my project folder but it can be anywhere
 cd <project-folder>
@@ -41,3 +42,41 @@ It is possible to create a new database and switch to it using the `use` command
 // use <database-name>
 use data
 ```
+
+#### Creating database users
+
+To create a new user, the `db.createUser(<user-obj>)` has to be used, the user must pass its login, password and an array of role objects that can be simplified to strings.
+```javascript
+db.createUser({
+    user: 'pedro',
+    pwd: '1234',
+    roles: ['readWrite', 'dbAdmin']
+})
+```
+
+## Populating
+
+#### Collections
+
+MongoDb stores its data in collections, they are like tables in relational databases. To create a new collection, we use the following command:
+```javascript
+db.createCollection('customers')
+```
+
+We can list the the collections of the current database by running `show collections`.
+
+
+Before making queries, we must have some data in our database. MongoDB use a (js-json)-like syntax for creating and querying its documents.
+```javascript
+// db.<collection>.insert(<document>)
+// if more than one document is passed as parameter, it is ignored
+// to insert more than one document, they must be passed in an array of documents
+db.customers.insert({name: 'John', surname: 'Doe'})
+db.customers.insert([{name: 'Steven', surname: 'Smith'}, {name: 'Joan', surname: 'Johnson', gender: 'female'}])
+
+// insertOne and insertMany are the supported variations of the insert function.
+db.customers.insertOne({name: 'John', surname: 'Doe'})
+db.customers.insertMany([{name: 'Steven', surname: 'Smith'}, {name: 'Joan', surname: 'Johnson', gender: 'female'}])
+```
+
+Documents do not need to have the same fields, but having a logical. For example, the last document in the insert many function has an extra `gender` field.
